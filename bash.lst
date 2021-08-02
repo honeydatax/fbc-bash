@@ -1,0 +1,4 @@
+./ls
+./dir
+./free
+./echo "hello world"
