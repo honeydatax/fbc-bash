@@ -1,17 +1,17 @@
-#include "vbcompat.bi"
-    Dim Shared s As string
-    Dim Shared As Any Ptr producer_id
-	Dim Shared As Any Ptr produced
-	Sub producer( ByVal param As Any Ptr )
-		MutexUnlock produced
-		Mutexlock produced
+#include once "crt/unistd.bi"
+dim shared pp as integer
+Declare Function kills lib "sigs" alias "kills" (p as integer,sig as integer) As Integer
+
+
+	Sub producer(s as string,p as integer)
+		pp=p
 		shell (s)
-		MutexDestroy produced
 		end 1
 	End Sub
 
 Dim As Integer i = 2
 dim ss as string
+dim process as integer
 
 Do
     Dim As String arg = Command(i)
@@ -22,19 +22,9 @@ Do
     ss=ss+arg+" " 
     i += 1
 Loop
-s=ss	
-    produced = MutexCreate
-    If( ( produced = 0 )  ) Then
-        End 1
-    End If
 
-    MutexLock produced
-    producer_id = ThreadCreate(@producer)
-    If( ( producer_id = 0 ) ) Then
-        End 1
-    End If
-
-	ThreadWait producer_id
+	process=fork()
+	if process<>0 then producer(ss,process)
     Sleep val(trim(command(1)))
-    MutexDestroy produced
+	kills (pp,2)
 	end 1
