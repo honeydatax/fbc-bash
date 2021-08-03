@@ -1,3 +1,5 @@
+color 15,5
+#include "vbcompat.bi"
 #include once "crt/unistd.bi"
 dim shared pp as integer
 Declare Function kills lib "sigs" alias "kills" (p as integer,sig as integer) As Integer
@@ -6,13 +8,15 @@ Declare Function kills lib "sigs" alias "kills" (p as integer,sig as integer) As
 	Sub producer(s as string,p as integer)
 		pp=p
 		shell (s)
-		end 1
+		system()
 	End Sub
 
 Dim As Integer i = 2
 dim ss as string
 dim process as integer
-
+dim d1 as double
+dim d2 as double
+  d1 = Now()
 Do
     Dim As String arg = Command(i)
     If Len(arg) = 0 Then
@@ -25,6 +29,8 @@ Loop
 
 	process=fork()
 	if process<>0 then producer(ss,process)
-    Sleep val(trim(command(1)))
+    while DateDiff( "s", d1, d2 )<val(trim(command(1)))
+		d2 = Now()
+    wend
 	kills (pp,2)
-	end 1
+	system()
