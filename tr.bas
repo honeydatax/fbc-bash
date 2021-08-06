@@ -1,6 +1,6 @@
 Dim s As String
 
-Open command(1) For Input As #1
+Open Cons For input  As #1
 while not(eof(1))
 	Line Input #1, s
 	#ifdef __FB_UNIX__
