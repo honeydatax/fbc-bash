@@ -10,14 +10,21 @@ Declare Function kills lib "sigs" alias "kills" (p as integer,sig as integer) As
 
 
 	Sub producer(s as string,p as integer)
+	dim fff as integer= freefile
 		counter(c)=p
 		progr(c)=s
 		c=c+1
 		pp=p
-		
 		print pp ;
 		print "	"+s
-		shell (s)
+	Open Pipe s For Input As #fff
+	Dim As String ln
+		Do Until EOF(fff)
+			Line Input #fff, ln
+			Print ln
+		Loop
+
+		Close #fff
 		system()
 	End Sub
 
@@ -26,10 +33,12 @@ dim ss as string
 dim process as integer
 dim d1 as integer
 dim d2 as integer
+Open Scrn For Input shared As #1
 while instr(lcase(trim(ss)),"exit")=0
 	print curdir()+" >>>>";
-	line input ,ss
+	line input #1,ss
 	if instr(lcase(trim(ss)),"ps")>0 then
+		print c ; " programs runing"
 		for i=0 to c-1
 			print trim(str(counter(i)))+"	"+progr(i)
 		next
@@ -51,3 +60,4 @@ while instr(lcase(trim(ss)),"exit")=0
 		end if
 	end if
 wend
+close
