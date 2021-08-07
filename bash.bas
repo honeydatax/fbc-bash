@@ -35,6 +35,9 @@ dim ssss as string
 dim process as integer
 dim d1 as integer
 dim d2 as integer
+dim cc as integer
+dim ccc as integer
+dim s1 as string
 Open Scrn For Input shared As #1
 while instr(lcase(trim(ss)),"exit")=0
 	print curdir()+" >>>>";
@@ -47,7 +50,7 @@ while instr(lcase(trim(ss)),"exit")=0
 	else
 		if instr(lcase(trim(ss)),"=")>0 then
 				SetEnviron(ss)
-				sss=mid(ss,1,instr(ss,"="))
+				sss=mid(ss,1,instr(ss,"=")-1)
 				print Environ(sss)
 		else
 			if instr(lcase(trim(ss)),"cd")>0 then
@@ -62,7 +65,29 @@ while instr(lcase(trim(ss)),"exit")=0
 					process=fork()
 					if process<>0 then producer(ss,process)
 				else
-					shell (ss)
+					ss=trim(ss)
+					sss=mid(ss,1,instr(ss," ")-1)
+					ssss=mid(ss,instr(ss," "))
+					while instr(ssss,"$")<>0
+						print ssss
+						ccc=len(ssss)
+						cc=instr(ssss,"$")
+						if cc>0 then ccc=instr(cc,ssss," ")
+						s1=mid(ssss,cc,ccc-1-cc)
+						s1=Environ(s1)
+						if instr(s1,"$") then s1=""
+						if cc=1 then
+							ssss=s1+mid(ssss,cc+1,ccc-1-cc)
+						else
+							if ccc=len(ssss) then
+								ssss=mid(ssss,ccc-1-cc)+s1
+							else
+								ssss=mid(ssss,1,cc-1)+s1+mid(ssss,ccc+1)
+							end if
+						end if
+					wend
+					ss=sss
+					exec(sss,ssss)
 				end if
 			end if
 		end if
