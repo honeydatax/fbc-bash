@@ -69,15 +69,15 @@ while instr(lcase(trim(ss)),"exit")=0
 					sss=mid(ss,1,instr(ss," ")-1)
 					ssss=mid(ss,instr(ss," "))
 					while instr(ssss,"$")<>0
-						print ssss
 						ccc=len(ssss)
 						cc=instr(ssss,"$")
 						if cc>0 then ccc=instr(cc,ssss," ")
-						s1=mid(ssss,cc,ccc-1-cc)
-						s1=Environ(s1)
-						if instr(s1,"$") then s1=""
+						if ccc<1 then ccc=len(ssss)
+						s1=trim(mid(ssss,cc+1,ccc-(cc)))
+						s1=trim(Environ(s1))
+						if instr(s1,"$")>0 then s1=""
 						if cc=1 then
-							ssss=s1+mid(ssss,cc+1,ccc-1-cc)
+							ssss=s1+mid(ssss,cc-1,ccc-cc)
 						else
 							if ccc=len(ssss) then
 								ssss=mid(ssss,ccc-1-cc)+s1
