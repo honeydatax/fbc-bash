@@ -47,7 +47,8 @@ while instr(lcase(trim(ss)),"exit")=0
 	else
 		if instr(lcase(trim(ss)),"=")>0 then
 				SetEnviron(ss)
-				print "set "+ss
+				sss=mid(ss,1,instr(ss,"="))
+				print Environ(sss)
 		else
 			if instr(lcase(trim(ss)),"cd")>0 then
 				d1=instr(lcase(trim(ss))," ")
