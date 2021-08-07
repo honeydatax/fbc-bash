@@ -20,7 +20,7 @@ while not(eof(1))
 			cc=s
 			cx=1
 				for i=0 to val(trim(command(n)))-1
-					if val(trim(command(n)))-1 = 0 then  
+					if val(trim(command(n))) = 0 then  
 						cx=len(cc)
 						cc=ltrim(cc)
 						cx=cx-(len(cc))
@@ -34,7 +34,6 @@ while not(eof(1))
 						cx=cx-(len(cc))
 					end if
 				next
-			c=0
 			c1=0
 			if c<>0 then c1=instr(cc," ")
 			if c1=0 then c1=len(cc)-1
