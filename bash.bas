@@ -116,20 +116,24 @@ while instr(lcase(trim(ss)),"exit")=0
 	else
 		line input #files2,ss
 	end if
-	if instr(lcase(trim(ss)),"ps")>0 then
+	if instr(lcase(trim(ss)),"ps")=1 then
 		print c ; " programs runing"
 		for i=0 to c-1
 			print trim(str(counter(i)))+"	"+progr(i)
 		next
 	else
-		if instr(lcase(trim(ss)),"=")>0 then
+		cc=instr(lcase(trim(ss)),"=")
+		if cc<1 then cc=len(ss)
+		i=instr(lcase(trim(ss))," ")
+		if i<1 then i=len(ss)
+		if cc<i then
 				SetEnviron(ss)
 				ss=trim(ss)
 				sss=mid(ss,1,instr(ss,"=")-1)
 				ssss=mid(ss,instr(ss,"=")+1)
 				setvar sss,ssss
 		else
-			if instr(lcase(trim(ss)),"cd")>0 then
+			if instr(lcase(trim(ss)),"cd ")=1 then
 				d1=instr(lcase(trim(ss))," ")
 				if d1>0 and d1<len(ss)then
 					ChDir(mid(ss,d1+1))
@@ -141,16 +145,20 @@ while instr(lcase(trim(ss)),"exit")=0
 					process=fork()
 					if process<>0 then producer(ss,process)
 				else
-					if instr(lcase(trim(ss)),"read")>0 then
+					if instr(lcase(trim(ss)),"read ")=1 then
 						SetEnviron(ss)
 						sss=mid(ss,instr(ss," ")+1)
 						line input ssss
 						setvar sss,ssss
 					else
-						if instr(lcase(trim(ss)),"set")>0 then	
+						if instr(lcase(trim(ss)),"set")=1 then	
 							listvar()
 						else
-							if instr(lcase(trim(ss)),".lst")>0 then	
+							cc=instr(lcase(trim(ss)),".lst")
+							if cc<1 then cc=len(ss)
+							i=instr(lcase(trim(ss))," ")
+							if i<1 then i=len(ss)
+							if cc<i then	
 								script=1
 								i=0
 								files2=freefile
