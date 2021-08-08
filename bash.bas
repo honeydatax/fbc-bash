@@ -1,14 +1,52 @@
 color 15,5
 #include "vbcompat.bi"
 #include once "crt/unistd.bi"
+dim shared nnames(0 to 2048) as string
+dim shared vvalues(0 to 2048) as string
+dim shared vars as integer
 dim shared counter(0 to 2048) as integer
 dim shared progr(0 to 2048) as string
 dim shared c as integer
 dim shared exitss as integer
 dim shared pp as integer
 Declare Function kills lib "sigs" alias "kills" (p as integer,sig as integer) As Integer
+	sub listvar()
+		dim eee as integer=-1
+		dim i as integer
+		for i=0 to vars
+				print vvalues(i)
+		next
+	end sub
+	sub setvar(names as string,values as string)
+		dim eee as integer=-1
+		dim i as integer
+		for i=0 to vars
+			if names=nnames(i) then 
+				eee=i
+				vvalues(i)=values
+				i=vars
+			end if
+		next
+		if eee=-1 then
+			nnames(vars)=names
+			vvalues(vars)=values
+			vars=vars+1
+		end if
+	end sub
 
-
+	function getvars(names as string)as string
+		dim retss as string=""
+		dim eee as integer=-1
+		dim i as integer
+		for i=0 to vars
+			if names=nnames(i) then 
+				eee=i
+				return vvalues(i)
+				i=vars
+			end if
+		next
+		return ""
+	end function
 	Sub producer(s as string,p as integer)
 	dim fff as integer= freefile
 		counter(c)=p
@@ -38,6 +76,7 @@ dim d2 as integer
 dim cc as integer
 dim ccc as integer
 dim s1 as string
+dim ppos as integer
 Open Scrn For Input shared As #1
 while instr(lcase(trim(ss)),"exit")=0
 	print curdir()+" >>>>";
@@ -51,7 +90,8 @@ while instr(lcase(trim(ss)),"exit")=0
 		if instr(lcase(trim(ss)),"=")>0 then
 				SetEnviron(ss)
 				sss=mid(ss,1,instr(ss,"=")-1)
-				print Environ(sss)
+				ssss=mid(ss,instr(ss,"=")+1)
+				setvar sss,ssss
 		else
 			if instr(lcase(trim(ss)),"cd")>0 then
 				d1=instr(lcase(trim(ss))," ")
@@ -74,19 +114,20 @@ while instr(lcase(trim(ss)),"exit")=0
 						if cc>0 then ccc=instr(cc,ssss," ")
 						if ccc<1 then ccc=len(ssss)
 						s1=trim(mid(ssss,cc+1,ccc-(cc)))
-						s1=trim(Environ(s1))
+						print s1
+						s1=trim(getvars(s1))
+						s1=s1+" "
 						if instr(s1,"$")>0 then s1=""
 						if cc=1 then
-							ssss=s1+mid(ssss,cc-1,ccc-cc)
+							ssss=s1+mid(ssss,ccc+1)
 						else
-							if ccc=len(ssss) then
-								ssss=mid(ssss,ccc-1-cc)+s1
+							if ccc=len(ssss) or ccc=len(ssss)-1 or ccc-1=len(ssss) then
+								ssss=mid(ssss,1,cc-1)+s1
 							else
 								ssss=mid(ssss,1,cc-1)+s1+mid(ssss,ccc+1)
 							end if
 						end if
 					wend
-					ss=sss
 					exec(sss,ssss)
 				end if
 			end if
