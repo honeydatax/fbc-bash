@@ -93,8 +93,20 @@ dim ppos as integer
 dim script as integer
 dim cond as integer
 dim files1 as integer
+dim s as string
 dim files2 as integer
 If signal(SIGINT, @intercept) = SIG_IGN Then signal(SIGINT, SIG_IGN)
+i=0
+Do
+    Dim As String arg = Command(i)
+    If Len(arg) = 0 Then
+        Exit Do
+    End If
+	setvar trim(str(i)),arg
+    i += 1
+Loop
+
+
 files1=freefile
 Open Scrn For Input shared As #files1
 while instr(lcase(trim(ss)),"exit")=0
@@ -140,10 +152,28 @@ while instr(lcase(trim(ss)),"exit")=0
 						else
 							if instr(lcase(trim(ss)),".lst")>0 then	
 								script=1
+								i=0
 								files2=freefile
 								ss=trim(ss)
 								sss=mid(ss,1,instr(ss," ")-1)
 								Open sss For Input shared As #files2
+								ssss=ss+" END"
+								do									
+								ccc=len(ssss)
+									cc=instr(ssss," ")
+									if cc>0 then ccc=instr(cc,ssss," ")
+									if cc<1 then cc=len(ssss)
+									s1=trim(mid(ssss,1,cc))
+									setvar trim(str(i)),s1
+									i=i+1
+									s1=""
+										if cc=len(ssss) then 
+											ssss=mid(ssss,cc)
+										else
+											ssss=mid(ssss,cc+1)
+										end if
+										if instr(ssss," ")<1 then exit do
+								loop 
 							else
 
 								ss=trim(ss)
