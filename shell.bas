@@ -1,4 +1,11 @@
 color 15,5
+#define SIGINT 2
+#define SIG_IGN cptr(sighandler_t, 1)
+
+Type sighandler_t As Sub cdecl (ByVal As Integer)
+
+Declare Function signal cdecl alias "signal" ( ByVal signum As Integer, ByVal handler As sighandler_t ) As sighandler_t
+
 #include "vbcompat.bi"
 #include once "crt/unistd.bi"
 dim shared nnames(0 to 2048) as string
@@ -10,6 +17,12 @@ dim shared c as integer
 dim shared exitss as integer
 dim shared pp as integer
 Declare Function kills lib "sigs" alias "kills" (p as integer,sig as integer) As Integer
+	Sub intercept cdecl (ByVal sig As Integer)
+		Print "^c" 
+	End Sub
+
+
+
 	sub listvar()
 		dim eee as integer=-1
 		dim i as integer
@@ -77,6 +90,7 @@ dim cc as integer
 dim ccc as integer
 dim s1 as string
 dim ppos as integer
+If signal(SIGINT, @intercept) = SIG_IGN Then signal(SIGINT, SIG_IGN)
 Open cons For Input shared As #1
 while not(eof(1))
 	
