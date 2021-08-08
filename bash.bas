@@ -90,11 +90,20 @@ dim cc as integer
 dim ccc as integer
 dim s1 as string
 dim ppos as integer
+dim script as integer
+dim cond as integer
+dim files1 as integer
+dim files2 as integer
 If signal(SIGINT, @intercept) = SIG_IGN Then signal(SIGINT, SIG_IGN)
-Open Scrn For Input shared As #1
+files1=freefile
+Open Scrn For Input shared As #files1
 while instr(lcase(trim(ss)),"exit")=0
-	print curdir()+" >>>>";
-	line input #1,ss
+	if script=0 then 
+		print curdir()+" >>>>";
+		line input #files1,ss
+	else
+		line input #files2,ss
+	end if
 	if instr(lcase(trim(ss)),"ps")>0 then
 		print c ; " programs runing"
 		for i=0 to c-1
@@ -103,6 +112,7 @@ while instr(lcase(trim(ss)),"exit")=0
 	else
 		if instr(lcase(trim(ss)),"=")>0 then
 				SetEnviron(ss)
+				ss=trim(ss)
 				sss=mid(ss,1,instr(ss,"=")-1)
 				ssss=mid(ss,instr(ss,"=")+1)
 				setvar sss,ssss
@@ -128,34 +138,47 @@ while instr(lcase(trim(ss)),"exit")=0
 						if instr(lcase(trim(ss)),"set")>0 then	
 							listvar()
 						else
-							ss=trim(ss)
-							sss=mid(ss,1,instr(ss," ")-1)
-							ssss=mid(ss,instr(ss," "))
-							while instr(ssss,"$")<>0
-								ccc=len(ssss)
-								cc=instr(ssss,"$")
-								if cc>0 then ccc=instr(cc,ssss," ")
-								if ccc<1 then ccc=len(ssss)
-								s1=trim(mid(ssss,cc+1,ccc-(cc)))
-								s1=trim(getvars(s1))
-								s1=s1+" "
-								if instr(s1,"$")>0 then s1=""
-								if cc=1 then
-									ssss=s1+mid(ssss,ccc+1)
-								else
-									if ccc=len(ssss) or ccc=len(ssss)-1 or ccc-1=len(ssss) then
-										ssss=mid(ssss,1,cc-1)+s1
+							if instr(lcase(trim(ss)),".lst")>0 then	
+								script=1
+								files2=freefile
+								ss=trim(ss)
+								sss=mid(ss,1,instr(ss," ")-1)
+								Open sss For Input shared As #files2
+							else
+
+								ss=trim(ss)
+								sss=mid(ss,1,instr(ss," ")-1)
+								ssss=mid(ss,instr(ss," "))
+								while instr(ssss,"$")<>0
+									ccc=len(ssss)
+									cc=instr(ssss,"$")
+									if cc>0 then ccc=instr(cc,ssss," ")
+									if ccc<1 then ccc=len(ssss)
+									s1=trim(mid(ssss,cc+1,ccc-(cc)))
+									s1=trim(getvars(s1))
+									s1=s1+" "
+									if instr(s1,"$")>0 then s1=""
+									if cc=1 then
+										ssss=s1+mid(ssss,ccc+1)
 									else
-										ssss=mid(ssss,1,cc-1)+s1+mid(ssss,ccc+1)
+										if ccc=len(ssss) or ccc=len(ssss)-1 or ccc-1=len(ssss) then
+											ssss=mid(ssss,1,cc-1)+s1
+										else
+											ssss=mid(ssss,1,cc-1)+s1+mid(ssss,ccc+1)
+										end if
 									end if
-								end if
-							wend
-								exec(sss,ssss)
+								wend
+									exec(sss,ssss)
+							end if	
 						end if	
 					end if
 				end if
 			end if
 		end if
+	end if
+	if script=1 and eof(files2) then
+		close files2
+		script=0
 	end if
 wend
 close
