@@ -14,7 +14,7 @@ Declare Function kills lib "sigs" alias "kills" (p as integer,sig as integer) As
 		dim eee as integer=-1
 		dim i as integer
 		for i=0 to vars
-				print vvalues(i)
+				print nnames(i)+"="+vvalues(i)
 		next
 	end sub
 	sub setvar(names as string,values as string)
@@ -105,30 +105,40 @@ while not(eof(1))
 					process=fork()
 					if process<>0 then producer(ss,process)
 				else
-					ss=trim(ss)
-					sss=mid(ss,1,instr(ss," ")-1)
-					ssss=mid(ss,instr(ss," "))
-					while instr(ssss,"$")<>0
-						ccc=len(ssss)
-						cc=instr(ssss,"$")
-						if cc>0 then ccc=instr(cc,ssss," ")
-						if ccc<1 then ccc=len(ssss)
-						s1=trim(mid(ssss,cc+1,ccc-(cc)))
-						print s1
-						s1=trim(getvars(s1))
-						s1=s1+" "
-						if instr(s1,"$")>0 then s1=""
-						if cc=1 then
-							ssss=s1+mid(ssss,ccc+1)
+					if instr(lcase(trim(ss)),"read")>0 then
+						SetEnviron(ss)
+						sss=mid(ss,instr(ss," ")+1)
+						line input ssss
+						setvar sss,ssss
+					else
+						if instr(lcase(trim(ss)),"set")>0 then	
+							listvar()
 						else
-							if ccc=len(ssss) or ccc=len(ssss)-1 or ccc-1=len(ssss) then
-								ssss=mid(ssss,1,cc-1)+s1
-							else
-								ssss=mid(ssss,1,cc-1)+s1+mid(ssss,ccc+1)
-							end if
-						end if
-					wend
-					exec(sss,ssss)
+							ss=trim(ss)
+							sss=mid(ss,1,instr(ss," ")-1)
+							ssss=mid(ss,instr(ss," "))
+							while instr(ssss,"$")<>0
+								ccc=len(ssss)
+								cc=instr(ssss,"$")
+								if cc>0 then ccc=instr(cc,ssss," ")
+								if ccc<1 then ccc=len(ssss)
+								s1=trim(mid(ssss,cc+1,ccc-(cc)))
+								s1=trim(getvars(s1))
+								s1=s1+" "
+								if instr(s1,"$")>0 then s1=""
+								if cc=1 then
+									ssss=s1+mid(ssss,ccc+1)
+								else
+									if ccc=len(ssss) or ccc=len(ssss)-1 or ccc-1=len(ssss) then
+										ssss=mid(ssss,1,cc-1)+s1
+									else
+										ssss=mid(ssss,1,cc-1)+s1+mid(ssss,ccc+1)
+									end if
+								end if
+							wend
+								exec(sss,ssss)
+						end if	
+					end if
 				end if
 			end if
 		end if
