@@ -79,7 +79,8 @@ Declare Function kills lib "sigs" alias "kills" (p as integer,sig as integer) As
 		system()
 	End Sub
 
-Dim As Integer i = 2
+Dim As Integer i = 1
+dim s as string
 dim ss as string
 dim sss as string
 dim ssss as string
@@ -91,10 +92,18 @@ dim ccc as integer
 dim s1 as string
 dim ppos as integer
 If signal(SIGINT, @intercept) = SIG_IGN Then signal(SIGINT, SIG_IGN)
-Open cons For Input shared As #1
-while not(eof(1))
-	
-	line input #1,ss
+
+Do
+    Dim As String arg = Command(i)
+    If Len(arg) = 0 Then
+        Exit Do
+    End If
+
+    ss=ss+arg+" " 
+    i += 1
+Loop
+s=ss	
+
 	if instr(lcase(trim(ss)),"ps")>0 then
 		print c ; " programs runing"
 		for i=0 to c-1
@@ -157,5 +166,5 @@ while not(eof(1))
 			end if
 		end if
 	end if
-wend
-close
+
+
