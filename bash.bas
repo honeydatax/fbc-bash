@@ -116,7 +116,7 @@ while instr(lcase(trim(ss)),"exit")=0
 	else
 		line input #files2,ss
 	end if
-	if instr(lcase(trim(ss)),"ps")=1 then
+	if lcase(trim(ss))="ps" then
 		print c ; " programs runing"
 		for i=0 to c-1
 			print trim(str(counter(i)))+"	"+progr(i)
@@ -151,7 +151,7 @@ while instr(lcase(trim(ss)),"exit")=0
 						line input ssss
 						setvar sss,ssss
 					else
-						if instr(lcase(trim(ss)),"set")=1 then	
+						if lcase(trim(ss))="set" then	
 							listvar()
 						else
 							cc=instr(lcase(trim(ss)),".lst")
